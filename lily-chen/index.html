@@ -166,6 +166,7 @@
   .share-hint{margin:14px 0 0;font-size:14.5px;line-height:1.6;color:#5b6a63}
   a:focus-visible,button:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
   [hidden]{display:none !important}
+  .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   section.block{padding:44px 0 8px}
   .sec-head{border-top:2px solid var(--ink);padding-top:12px;margin-bottom:18px}
   .sec-head h2{
@@ -187,6 +188,61 @@
     margin:48px 0 28px;padding-top:16px;border-top:1px solid var(--line);
     font-size:13.5px;color:var(--muted);
   }
+
+  .bio p{margin:0 0 14px;max-width:38em}
+  .bio p.em, .bio strong{font-weight:700}
+  .consult-grid{
+    display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:stretch;margin-top:8px;
+  }
+  .consult-form-card,.consult-direct{
+    border-radius:16px;padding:26px 22px;
+  }
+  .consult-form-card{
+    background:#ffffff;color:#0b1a31;
+    border:1px solid #e6e8ee;box-shadow:0 2px 10px rgba(11,26,49,.06);
+  }
+  .consult-direct{background:#0b1a31;color:#f4f6f8}
+  .consult-form-card h3,.consult-direct h3{
+    font-family:"Noto Serif SC",serif;font-weight:900;
+    font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 18px;letter-spacing:-.01em;
+  }
+  .consult-form-card h3{color:#0b1a31}
+  .consult-direct h3{color:#fff}
+  .consult-form label{display:block;margin:0}
+  .consult-form input,.consult-form textarea{
+    display:block;width:100%;margin:0 0 12px;padding:12px 14px;
+    font:inherit;font-size:15.5px;line-height:1.5;color:#0b1a31;
+    background:#fff;border:1px solid #d5dae3;border-radius:12px;
+  }
+  .consult-form textarea{min-height:110px;resize:vertical}
+  .consult-form input:focus,.consult-form textarea:focus{
+    outline:3px solid #e5cc89;outline-offset:1px;border-color:#0b1a31;
+  }
+  .consult-submit{
+    display:block;width:100%;margin-top:6px;padding:12px 16px;
+    font:inherit;font-size:16px;font-weight:700;letter-spacing:.04em;
+    color:#0b1a31;background:#e5cc89;border:0;border-radius:999px;cursor:pointer;
+  }
+  .consult-submit:hover{filter:brightness(1.05)}
+  .consult-status{margin:12px 0 0;font-size:14.5px;line-height:1.55;color:#5b6a63}
+  .direct-rows{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:15.5px;line-height:1.55}
+  .direct-rows .k{display:block;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.7;font-weight:700;margin-bottom:1px}
+  .direct-rows a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(229,204,137,.45)}
+  .direct-rows a:hover{border-bottom-color:#e5cc89}
+  .wechat-note{margin:16px 0 10px;font-size:14.5px;line-height:1.55;opacity:.95}
+  .wechat-card{
+    background:#fff;color:#0b1a31;border-radius:14px;padding:14px 14px 12px;text-align:center;
+  }
+  .wechat-card .wechat-name{margin:0 0 8px;font-weight:700;font-size:15px}
+  .wechat-card img{display:block;width:100%;max-width:220px;height:auto;margin:0 auto}
+  .consult-extra{margin:16px 0 0;display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14.5px}
+  .consult-extra a{color:var(--ink)}
+  @media (max-width:760px){
+    .consult-grid{grid-template-columns:1fr}
+    .consult-direct{order:-1}
+    .consult-form-card,.consult-direct{padding:22px 18px}
+  }
+
   @media (max-width:760px){
     body{font-size:16px}
     .hero{padding:16px 0 0}
@@ -277,47 +333,69 @@
 
     <section class="block" aria-labelledby="about-heading">
       <div class="sec-head">
-        <h2 id="about-heading" data-i18n="aboutTitle">About Lily</h2>
+        <h2 id="about-heading" data-i18n="aboutTitle">My experience</h2>
       </div>
       <figure class="portrait">
         <img src="lily-hero.jpg" width="800" height="1067" alt="Professional portrait of Lily Chen" data-i18n-alt="photoAlt" />
         <figcaption data-i18n="photoCaption">Lily Chen / 陈丽莉</figcaption>
       </figure>
-      <p data-i18n="aboutP1">Lily previously worked in insurance and led a team in China. After coming to the United States, she started over.</p>
-      <p data-i18n="aboutP2">She began building a team in Hawaii in 2017, and now also develops a team in Las Vegas. She serves clients and leads teams in both places.</p>
+      <div class="bio">
+        <p class="em" data-i18n-html="aboutP1"><strong>When I was starting over in the United States, I was raising my child while building my own insurance team from the ground up.</strong></p>
+        <p data-i18n-html="aboutP2">Before coming to the United States, I worked in insurance in China and also led a team. In 2017, I built my own team in Hawaii, and in the first year we reached <strong>$1 million in team production</strong>. I now lead teams in both Hawaii and Las Vegas.</p>
+        <p data-i18n-html="aboutP3"><strong>I want to help Chinese in the United States, ages 30 to 50, make this path into an insurance business work.</strong> From getting licensed and writing the first policy, to later leading a team of my own, I will share how I made my choices, the pitfalls I ran into, and how I adjusted when something was not working.</p>
+        <p data-i18n="aboutP4">If you are considering entering the industry, or you already work in insurance and want to build a team of your own, I welcome you to talk with me.</p>
+      </div>
     </section>
 
     <section class="block" id="consult" aria-labelledby="consult-heading">
       <div class="sec-head">
         <h2 id="consult-heading" data-i18n="consultTitle">Book a life insurance consultation</h2>
       </div>
-      <p data-i18n="consultP">If you would like to talk about family protection, living benefits, or have Lily review a current policy, email or call her directly.</p>
-      <ul class="contact-list">
-        <li>
-          <a href="mailto:lilychen.hawaii@gmail.com?subject=Life%20insurance%20consultation%20%2F%20%E9%A2%84%E7%BA%A6%E5%AF%BF%E9%99%A9%E5%92%A8%E8%AF%A2">
-            <span class="contact-label" data-i18n="emailLabel">Email</span>
-            <span class="contact-value">lilychen.hawaii@gmail.com</span>
-          </a>
-        </li>
-        <li>
-          <a href="tel:+18088592559">
-            <span class="contact-label" data-i18n="phoneLabel">Phone</span>
-            <span class="contact-value">(808) 859-2559</span>
-          </a>
-        </li>
-        <li>
-          <a href="https://skyonwealth.com/" target="_blank" rel="noopener noreferrer">
-            <span class="contact-label" data-i18n="webLabel">Website</span>
-            <span class="contact-value">skyonwealth.com</span>
-          </a>
-        </li>
-        <li>
-          <a href="https://pfalaunch.com/agent/lily" target="_blank" rel="noopener noreferrer">
-            <span class="contact-label" data-i18n="pfaLabel">Premier Financial Alliance page</span>
-            <span class="contact-value">pfalaunch.com/agent/lily</span>
-          </a>
-        </li>
-      </ul>
+      <div class="consult-grid">
+        <div class="consult-form-card">
+          <h3 data-i18n="formTitle">Send a consultation message</h3>
+          <form class="consult-form" id="consultForm" action="mailto:lilychen.hawaii@gmail.com" method="post" enctype="text/plain">
+            <label>
+              <span class="visually-hidden" data-i18n="formName">Your name</span>
+              <input type="text" name="name" id="consultName" required autocomplete="name" data-i18n-placeholder="formNamePh" placeholder="Your name" />
+            </label>
+            <label>
+              <span class="visually-hidden" data-i18n="formPhone">Phone</span>
+              <input type="tel" name="phone" id="consultPhone" autocomplete="tel" data-i18n-placeholder="formPhonePh" placeholder="Phone" />
+            </label>
+            <label>
+              <span class="visually-hidden" data-i18n="formEmail">Email</span>
+              <input type="email" name="email" id="consultEmail" autocomplete="email" data-i18n-placeholder="formEmailPh" placeholder="Email" />
+            </label>
+            <label>
+              <span class="visually-hidden" data-i18n="formMsg">Message</span>
+              <textarea name="message" id="consultMsg" data-i18n-placeholder="formMsgPh" placeholder="Please briefly describe what you would like to learn about: life insurance protection / living benefits / retirement protection ideas / joining a team / training opportunities"></textarea>
+            </label>
+            <button class="consult-submit" type="submit" data-i18n="formSubmit">Send message</button>
+          </form>
+          <p class="consult-status" id="consultStatus" hidden></p>
+        </div>
+        <div class="consult-direct">
+          <h3 data-i18n="directTitle">Contact Lily directly</h3>
+          <ul class="direct-rows">
+            <li><span class="k" data-i18n="directNameLabel">Contact</span> 陈丽莉 Lily Chen</li>
+            <li><span class="k" data-i18n="directRoleLabel">Title</span> <span data-i18n="directRole">Licensed independent life insurance broker</span></li>
+            <li><span class="k" data-i18n="phoneLabel">Phone</span> <a href="tel:+18088592559">(808) 859-2559</a></li>
+            <li><span class="k" data-i18n="emailLabel">Email</span> <a href="mailto:lilychen.hawaii@gmail.com">lilychen.hawaii@gmail.com</a></li>
+            <li><span class="k" data-i18n="emailLabel2">Office email</span> <a href="mailto:info@skyonwealth.com">info@skyonwealth.com</a></li>
+            <li><span class="k" data-i18n="addressLabel">Address</span> <a href="https://maps.google.com/?q=3100+Spring+Mountain+Rd+%231,+Las+Vegas,+NV+89102" target="_blank" rel="noopener noreferrer">3100 Spring Mountain Rd #1, Las Vegas, NV 89102</a></li>
+          </ul>
+          <p class="wechat-note" data-i18n="wechatNote">Scan to add WeChat for more consultation and training information in Chinese.</p>
+          <div class="wechat-card">
+            <p class="wechat-name">Lily Chen</p>
+            <img src="wechat-qr.png" width="512" height="512" alt="WeChat QR code for Lily Chen" data-i18n-alt="wechatAlt" />
+          </div>
+        </div>
+      </div>
+      <div class="consult-extra">
+        <a href="https://skyonwealth.com/" target="_blank" rel="noopener noreferrer">skyonwealth.com</a>
+        <a href="https://pfalaunch.com/agent/lily" target="_blank" rel="noopener noreferrer">pfalaunch.com/agent/lily</a>
+      </div>
     </section>
 
     <section class="block" id="team" aria-labelledby="team-heading">
@@ -368,15 +446,37 @@
       shareHint: "Use your browser or phone share menu to send this page, or copy the link from the address bar.",
       shareCopied: "Link copied. You can paste it into a message.",
       cardActionsLabel: "Card actions",
-      aboutTitle: "About Lily",
+      aboutTitle: "My experience",
       photoAlt: "Professional portrait of Lily Chen",
       photoCaption: "Lily Chen / 陈丽莉",
-      aboutP1: "Lily previously worked in insurance and led a team in China. After coming to the United States, she started over.",
-      aboutP2: "She began building a team in Hawaii in 2017, and now also develops a team in Las Vegas. She serves clients and leads teams in both places.",
+      aboutP1: "<strong>When I was starting over in the United States, I was raising my child while building my own insurance team from the ground up.</strong>",
+      aboutP2: "Before coming to the United States, I worked in insurance in China and also led a team. In 2017, I built my own team in Hawaii, and in the first year we reached <strong>$1 million in team production</strong>. I now lead teams in both Hawaii and Las Vegas.",
+      aboutP3: "<strong>I want to help Chinese in the United States, ages 30 to 50, make this path into an insurance business work.</strong> From getting licensed and writing the first policy, to later leading a team of my own, I will share how I made my choices, the pitfalls I ran into, and how I adjusted when something was not working.",
+      aboutP4: "If you are considering entering the industry, or you already work in insurance and want to build a team of your own, I welcome you to talk with me.",
       consultTitle: "Book a life insurance consultation",
       consultP: "If you would like to talk about family protection, living benefits, or have Lily review a current policy, email or call her directly.",
+      formTitle: "Send a consultation message",
+      formName: "Your name",
+      formNamePh: "Your name",
+      formPhone: "Phone",
+      formPhonePh: "Phone",
+      formEmail: "Email",
+      formEmailPh: "Email",
+      formMsg: "Message",
+      formMsgPh: "Please briefly describe what you would like to learn about: life insurance protection / living benefits / retirement protection ideas / joining a team / training opportunities",
+      formSubmit: "Send message",
+      formStatus: "Your email app should open with the message. If it does not, please email lilychen.hawaii@gmail.com.",
+      formNeedContact: "Please leave a phone number or email so Lily can reach you.",
+      directTitle: "Contact Lily directly",
+      directNameLabel: "Contact",
+      directRoleLabel: "Title",
+      directRole: "Licensed independent life insurance broker",
       emailLabel: "Email",
+      emailLabel2: "Office email",
       phoneLabel: "Phone",
+      addressLabel: "Address",
+      wechatNote: "Scan to add WeChat for more consultation and training information in Chinese.",
+      wechatAlt: "WeChat QR code for Lily Chen",
       webLabel: "Website",
       pfaLabel: "Premier Financial Alliance page",
       teamSecTitle: "The industry and the team",
@@ -402,15 +502,37 @@
       shareHint: "请用手机或浏览器的分享功能把这一页发给朋友，也可以从地址栏复制链接。",
       shareCopied: "链接已复制，可以直接粘贴发给朋友。",
       cardActionsLabel: "名片操作",
-      aboutTitle: "关于陈丽莉",
+      aboutTitle: "我的经历",
       photoAlt: "陈丽莉的职业照",
       photoCaption: "Lily Chen / 陈丽莉",
-      aboutP1: "我以前在中国做保险、带团队，来美国后重新起步。",
-      aboutP2: "2017 年开始在夏威夷建立团队，现在也在拉斯维加斯发展，两边的团队都在做。这两个地方都服务客户，也都在带团队。",
+      aboutP1: "<strong>我在美国重新起步时，一边带娃，一边从零建立自己的保险团队。</strong>",
+      aboutP2: "来美国之前，我在中国做保险，也带过团队。2017 年，我在夏威夷建立了自己的团队，第一年就做到了 <strong>100 万美元的团队业绩</strong>。现在，我在夏威夷和拉斯维加斯两地带团队。",
+      aboutP3: "<strong>我想帮 30 到 50 岁的在美华人，把保险创业这条路走通。</strong> 从考执照、做第一单，到后来自己带团队，我会跟你讲我当时怎么选、踩过哪些坑，以及走不通的时候，我是怎么调整的。",
+      aboutP4: "如果你正在考虑入行，或者已经在做保险，想建立自己的团队，欢迎找我聊聊。",
       consultTitle: "预约寿险咨询",
       consultP: "如果你想了解家庭保障、生前福利，或想请我看看现有保单，可以直接发邮件或打电话。",
+      formTitle: "发送咨询信息",
+      formName: "您的姓名",
+      formNamePh: "您的姓名",
+      formPhone: "联系电话",
+      formPhonePh: "联系电话",
+      formEmail: "电子邮箱",
+      formEmailPh: "电子邮箱",
+      formMsg: "留言",
+      formMsgPh: "请简单说明您想了解的内容：寿险保障 / 生前福利 / 退休保障理念 / 加入团队 / 培训机会",
+      formSubmit: "提交咨询",
+      formStatus: "将打开你的邮件应用。如果没有打开，请直接发邮件到 lilychen.hawaii@gmail.com。",
+      formNeedContact: "请留下电话或邮箱，方便联系你。",
+      directTitle: "直接联系",
+      directNameLabel: "联系人",
+      directRoleLabel: "身份",
+      directRole: "持牌独立寿险经纪人",
       emailLabel: "邮箱",
+      emailLabel2: "工作邮箱",
       phoneLabel: "电话",
+      addressLabel: "地址",
+      wechatNote: "扫码添加微信，获取更多中文咨询与培训信息。",
+      wechatAlt: "陈丽莉的微信二维码",
       webLabel: "网站",
       pfaLabel: "Premier Financial Alliance 页面",
       teamSecTitle: "了解寿险行业与团队",
@@ -430,6 +552,12 @@
     document.documentElement.lang = lang === "zh-CN" ? "zh-CN" : "en";
     document.querySelectorAll("[data-i18n]").forEach(function(el){
       el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(function(el){
+      el.innerHTML = t(el.getAttribute("data-i18n-html"));
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el){
+      el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")));
     });
     document.querySelectorAll("[data-i18n-alt]").forEach(function(el){
       el.alt = t(el.getAttribute("data-i18n-alt"));
@@ -516,6 +644,32 @@
   });
   document.getElementById("saveCardBtn").addEventListener("click", saveCard);
   document.getElementById("shareCardBtn").addEventListener("click", shareCard);
+
+  var consultForm = document.getElementById("consultForm");
+  if (consultForm) {
+    consultForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      var name = (document.getElementById("consultName").value || "").trim();
+      var phone = (document.getElementById("consultPhone").value || "").trim();
+      var email = (document.getElementById("consultEmail").value || "").trim();
+      var msg = (document.getElementById("consultMsg").value || "").trim();
+      var status = document.getElementById("consultStatus");
+      if (!phone && !email) {
+        if (status) { status.hidden = false; status.textContent = t("formNeedContact"); }
+        return;
+      }
+      var subject = (lang === "zh-CN" ? "预约寿险咨询" : "Life insurance consultation") + (name ? " — " + name : "");
+      var lines = [];
+      if (name) lines.push((lang === "zh-CN" ? "姓名：" : "Name: ") + name);
+      if (phone) lines.push((lang === "zh-CN" ? "电话：" : "Phone: ") + phone);
+      if (email) lines.push((lang === "zh-CN" ? "邮箱：" : "Email: ") + email);
+      if (msg) lines.push("", msg);
+      var href = "mailto:lilychen.hawaii@gmail.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines.join("\n"));
+      window.location.href = href;
+      if (status) { status.hidden = false; status.textContent = t("formStatus"); }
+    });
+  }
+
   applyLang(detectLang());
 })();
 </script>
