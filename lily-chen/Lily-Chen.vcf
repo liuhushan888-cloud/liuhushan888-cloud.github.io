@@ -1,0 +1,17 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Chen;Lily;;;
+FN:Lily Chen
+NICKNAME:陈丽莉
+ORG:Skyon Wealth
+TITLE:Regional Field Director, Premier Financial Alliance
+TEL;TYPE=CELL,VOICE:+1-808-859-2559
+EMAIL;TYPE=INTERNET:lilychen.hawaii@gmail.com
+URL:https://liuhushan888-cloud.github.io/lily-chen/
+item1.URL:https://skyonwealth.com/
+item1.X-ABLabel:Skyon Wealth
+item2.URL:https://pfalaunch.com/agent/lily
+item2.X-ABLabel:PFA
+ADR;TYPE=WORK:;;Honolulu;HI;;US
+NOTE:Hawaii · Las Vegas | Bilingual life insurance consulting and team development
+END:VCARD
