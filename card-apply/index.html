@@ -114,11 +114,45 @@
     appearance:none;
   }
   textarea{min-height:96px;resize:vertical;line-height:1.55}
-  input:focus,textarea:focus{
+  input:focus,textarea:focus,input[type="file"]:focus{
     border-color:var(--focus);
     box-shadow:0 0 0 3px rgba(13,92,78,.18);
   }
   .honey{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+  .file-box{
+    border:1px dashed var(--line);
+    border-radius:12px;
+    padding:12px;
+    background:#fbfcfb;
+  }
+  input[type="file"]{
+    width:100%;
+    font:inherit;
+    font-size:16px;
+    color:var(--ink);
+    padding:8px 0;
+  }
+  .previews{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-top:8px;
+  }
+  .previews figure{
+    margin:0;width:76px;
+  }
+  .previews img{
+    display:block;width:76px;height:76px;
+    object-fit:cover;border-radius:8px;
+    border:1px solid var(--line);background:#fff;
+  }
+  .previews figcaption{
+    margin-top:4px;font-size:11px;line-height:1.3;color:var(--muted);
+    word-break:break-all;
+  }
+  .file-msg{margin:8px 0 0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+  .file-msg.err{color:var(--err)}
+  .file-msg.ok{color:var(--teal)}
+  #upload-summary{margin:0;font-size:13px;line-height:1.55;color:var(--muted)}
+  #upload-summary.err{color:var(--err);font-weight:700}
   .consent{
     display:flex;gap:10px;align-items:flex-start;
     font-size:14px;line-height:1.55;color:var(--ink);
@@ -141,6 +175,7 @@
   }
   button[type="submit"]:hover{filter:brightness(.97)}
   button[type="submit"]:active{transform:translateY(1px)}
+  button[type="submit"][disabled]{opacity:.65;cursor:wait}
   .note{margin:14px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
   footer{
     max-width:560px;margin:0 auto;padding:0 16px 40px;
@@ -169,7 +204,7 @@
         <li><i class="dot"></i><div><b>内容随时更新</b><span>Update anytime</span></div></li>
         <li><i class="dot"></i><div><b>支持中英双语</b><span>Chinese &amp; English</span></div></li>
       </ul>
-      <form action="https://formsubmit.co/liuhushan888@gmail.com" method="POST" accept-charset="UTF-8">
+      <form id="card-form" action="https://formsubmit.co/liuhushan888@gmail.com" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
         <input type="hidden" name="_subject" value="AI名片申请 / AI Business Card Application" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_next" value="https://liuhushan888-cloud.github.io/card-apply/thanks.html" />
@@ -209,15 +244,385 @@
           <label for="social_links">社交链接 <span class="hint">Social links</span></label>
           <textarea id="social_links" name="social_links" maxlength="1000" placeholder="网站、LinkedIn、Instagram、小红书等，每行一个。"></textarea>
         </div>
+
+        <div>
+          <label for="avatar">头像或照片 / Photo or avatar <span class="req">*</span></label>
+          <div class="file-box">
+            <input id="avatar" name="avatar" type="file" accept="image/*" required />
+            <div class="previews" id="avatar-previews"></div>
+            <p class="file-msg" id="avatar-msg">请从相册选择一张近期照片，用于名片头像。</p>
+          </div>
+        </div>
+        <div>
+          <label for="logo">公司 Logo / Company logo <span class="hint">选填 Optional</span></label>
+          <div class="file-box">
+            <input id="logo" name="logo" type="file" accept="image/*" />
+            <div class="previews" id="logo-previews"></div>
+            <p class="file-msg" id="logo-msg">如需展示公司标识，请上传 Logo 图片。</p>
+          </div>
+        </div>
+        <div>
+          <label for="other_images_picker">其他图片 / Other images <span class="hint">选填，可多选 Optional, multiple</span></label>
+          <div class="file-box">
+            <input id="other_images_picker" name="other_images" type="file" accept="image/*" multiple />
+            <div id="other-images-fields"></div>
+            <div class="previews" id="other-previews"></div>
+            <p class="file-msg" id="other-msg">可多选作品、办公或活动照片。手机请从相册选择。</p>
+          </div>
+        </div>
+        <p id="upload-summary">所有图片合计不能超过 10 MB（FormSubmit 官方限制）。页面会尽量在发送前自动压缩。</p>
+
         <label class="consent">
           <input type="checkbox" name="consent" value="yes" required />
           <span>我同意使用以上信息制作 AI 名片，并同意你们与我联系。<br /><span class="hint">I agree that this information may be used to create my AI business card and to contact me.</span></span>
         </label>
-        <button type="submit">提交申请 · Submit</button>
-        <p class="note">提交后，资料将发送到我们的邮箱，仅用于制作名片和与你联系。标有 <span class="req">*</span> 的为必填项。</p>
+        <button type="submit" id="submit-btn">提交申请 · Submit</button>
+        <p class="note">提交后，资料和图片将发送到我们的邮箱，仅用于制作名片和与你联系。标有 <span class="req">*</span> 的为必填项。</p>
       </form>
     </div>
   </main>
   <footer>联系人 Contact：Amy</footer>
+  <script>
+  (function () {
+    var MAX_TOTAL = 10 * 1024 * 1024;
+    var SAFE_TOTAL = 9 * 1024 * 1024;
+    var MAX_EDGE = 1920;
+    var MAX_OTHER = 12;
+    var form = document.getElementById("card-form");
+    var submitBtn = document.getElementById("submit-btn");
+    var summary = document.getElementById("upload-summary");
+    var otherBag = document.getElementById("other-images-fields");
+    var otherPicker = document.getElementById("other_images_picker");
+    var avatarInput = document.getElementById("avatar");
+    var logoInput = document.getElementById("logo");
+    var objectUrls = [];
+    var readyToSend = false;
+
+    function fmt(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    }
+    function isImageFile(file) {
+      if (file.type && file.type.indexOf("image/") === 0) return true;
+      return /\.(jpe?g|png|gif|webp|bmp|heic|heif|tif|tiff|avif|svg)$/i.test(file.name || "");
+    }
+    function setFiles(input, files) {
+      if (typeof DataTransfer === "undefined") return false;
+      var dt = new DataTransfer();
+      files.forEach(function (f) { dt.items.add(f); });
+      input.files = dt.files;
+      return true;
+    }
+    function revokeUrls() {
+      objectUrls.forEach(function (u) { URL.revokeObjectURL(u); });
+      objectUrls = [];
+    }
+    function renderPreviews(containerId, files, notes) {
+      var box = document.getElementById(containerId);
+      box.innerHTML = "";
+      files.forEach(function (file, i) {
+        var fig = document.createElement("figure");
+        var url = URL.createObjectURL(file);
+        objectUrls.push(url);
+        var img = document.createElement("img");
+        img.src = url;
+        img.alt = file.name;
+        var cap = document.createElement("figcaption");
+        cap.textContent = notes && notes[i] ? notes[i] : (file.name + " · " + fmt(file.size));
+        fig.appendChild(img);
+        fig.appendChild(cap);
+        box.appendChild(fig);
+      });
+    }
+    function loadImage(file) {
+      if (typeof createImageBitmap === "function") {
+        return createImageBitmap(file, { imageOrientation: "from-image" }).catch(function () {
+          return createImageBitmap(file);
+        });
+      }
+      return new Promise(function (resolve, reject) {
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function () { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("decode")); };
+        img.src = url;
+      });
+    }
+    function canvasToBlob(canvas, type, quality) {
+      return new Promise(function (resolve) {
+        if (!canvas.toBlob) {
+          try {
+            var data = canvas.toDataURL(type, quality);
+            var bin = atob(data.split(",")[1] || "");
+            var arr = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            resolve(new Blob([arr], { type: type }));
+          } catch (e) { resolve(null); }
+          return;
+        }
+        canvas.toBlob(function (blob) { resolve(blob); }, type, quality);
+      });
+    }
+    function maybeClose(img) {
+      if (img && typeof img.close === "function") img.close();
+    }
+    async function encodeToLimit(file, budget) {
+      var img;
+      try { img = await loadImage(file); }
+      catch (e) { return { file: file, compressed: false, undecodable: true }; }
+
+      var ow = img.width || img.naturalWidth || 0;
+      var oh = img.height || img.naturalHeight || 0;
+      if (!ow || !oh) {
+        maybeClose(img);
+        return { file: file, compressed: false, undecodable: true };
+      }
+
+      var keepPng = file.type === "image/png";
+      var quality = 0.85;
+      var edge = MAX_EDGE;
+      var best = null;
+      var attempts = 0;
+
+      while (attempts < 8) {
+        var scale = Math.min(1, edge / Math.max(ow, oh));
+        var w = Math.max(1, Math.round(ow * scale));
+        var h = Math.max(1, Math.round(oh * scale));
+        var canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext("2d");
+        if (!keepPng) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, w, h);
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        var type = keepPng ? "image/png" : "image/jpeg";
+        var blob = await canvasToBlob(canvas, type, keepPng ? undefined : quality);
+        if (blob && (!best || blob.size < best.size)) best = blob;
+        if (blob && blob.size <= budget) break;
+        if (keepPng) {
+          keepPng = false;
+        } else if (quality > 0.55) {
+          quality -= 0.1;
+        } else {
+          edge = Math.round(edge * 0.75);
+          if (edge < 640) break;
+        }
+        attempts += 1;
+      }
+      maybeClose(img);
+
+      if (!best) return { file: file, compressed: false };
+      if (best.size >= file.size && file.size <= budget) {
+        return { file: file, compressed: false };
+      }
+      var ext = best.type === "image/png" ? ".png" : ".jpg";
+      var base = (file.name || "image").replace(/\.[^.]+$/, "");
+      var out = new File([best], base + ext, { type: best.type, lastModified: Date.now() });
+      return { file: out, compressed: true, originalSize: file.size };
+    }
+
+    function collectInputs() {
+      var files = [];
+      if (avatarInput.files && avatarInput.files[0]) files.push({ key: "avatar", file: avatarInput.files[0], input: avatarInput });
+      if (logoInput.files && logoInput.files[0]) files.push({ key: "logo", file: logoInput.files[0], input: logoInput });
+      Array.prototype.forEach.call(otherBag.querySelectorAll("input[type=file]"), function (inp) {
+        if (inp.files && inp.files[0]) files.push({ key: "other", file: inp.files[0], input: inp });
+      });
+      return files;
+    }
+    function totalBytes() {
+      return collectInputs().reduce(function (sum, item) { return sum + item.file.size; }, 0);
+    }
+    function updateSummary(extra, isErr) {
+      var n = collectInputs().length;
+      var t = totalBytes();
+      var text = "已选 " + n + " 张图片，合计 " + fmt(t) + " / 10 MB。";
+      if (t > MAX_TOTAL) {
+        text += "已超过 FormSubmit 的 10 MB 上限，请减少图片后再提交。";
+        isErr = true;
+      } else if (extra) {
+        text += extra;
+      } else {
+        text += "未超出限制。页面会尽量在发送前自动压缩较大的照片。";
+      }
+      summary.textContent = text;
+      summary.className = isErr ? "err" : "";
+      return t <= MAX_TOTAL;
+    }
+    function rejectNonImages(fileList) {
+      var ok = [];
+      var bad = [];
+      Array.prototype.forEach.call(fileList || [], function (f) {
+        if (isImageFile(f)) ok.push(f);
+        else bad.push(f.name || "未命名文件");
+      });
+      return { ok: ok, bad: bad };
+    }
+    function setMsg(id, text, cls) {
+      var el = document.getElementById(id);
+      el.textContent = text;
+      el.className = "file-msg" + (cls ? " " + cls : "");
+    }
+
+    async function processList(files, perBudget) {
+      var out = [];
+      var notes = [];
+      for (var i = 0; i < files.length; i++) {
+        var src = files[i];
+        var result = await encodeToLimit(src, perBudget);
+        out.push(result.file);
+        if (result.undecodable) {
+          notes.push(src.name + " · " + fmt(src.size) + "（无法预压缩，将按原文件上传）");
+        } else if (result.compressed) {
+          notes.push(src.name + " · " + fmt(result.originalSize) + " → " + fmt(result.file.size));
+        } else {
+          notes.push(src.name + " · " + fmt(result.file.size));
+        }
+      }
+      return { files: out, notes: notes };
+    }
+
+    async function handleSingle(input, previewId, msgId, emptyText) {
+      var picked = rejectNonImages(input.files);
+      if (picked.bad.length) {
+        setFiles(input, picked.ok);
+        setMsg(msgId, "只接受图片文件，已忽略：" + picked.bad.join("、"), "err");
+      }
+      if (!picked.ok.length) {
+        renderPreviews(previewId, []);
+        if (!picked.bad.length) setMsg(msgId, emptyText);
+        updateSummary();
+        return;
+      }
+      setMsg(msgId, "正在压缩图片…");
+      var budget = Math.min(3.5 * 1024 * 1024, SAFE_TOTAL);
+      var done = await processList(picked.ok.slice(0, 1), budget);
+      if (!setFiles(input, done.files)) {
+        setMsg(msgId, "当前浏览器无法替换文件，请尽量选择小于几 MB 的图片。", "err");
+      } else {
+        setMsg(msgId, done.notes[0] || "", "ok");
+      }
+      renderPreviews(previewId, done.files, done.notes);
+      updateSummary();
+    }
+
+    async function handleOther() {
+      var picked = rejectNonImages(otherPicker.files);
+      var msg = "";
+      var cls = "";
+      if (picked.bad.length) {
+        msg = "只接受图片文件，已忽略：" + picked.bad.join("、") + "。";
+        cls = "err";
+      }
+      var files = picked.ok;
+      if (files.length > MAX_OTHER) {
+        files = files.slice(0, MAX_OTHER);
+        msg += "一次最多 12 张其他图片，已只保留前 12 张。";
+        cls = "err";
+      }
+      otherBag.innerHTML = "";
+      if (!files.length) {
+        renderPreviews("other-previews", []);
+        setMsg("other-msg", msg || "可多选作品、办公或活动照片。手机请从相册选择。", cls);
+        updateSummary();
+        return;
+      }
+      setMsg("other-msg", (msg ? msg + " " : "") + "正在压缩图片…");
+      var budget = Math.max(400 * 1024, Math.floor(SAFE_TOTAL / Math.max(files.length + 2, 1)));
+      var done = await processList(files, budget);
+      done.files.forEach(function (file, i) {
+        var inp = document.createElement("input");
+        inp.type = "file";
+        inp.name = "other_image_" + (i + 1);
+        inp.accept = "image/*";
+        inp.className = "honey";
+        inp.tabIndex = -1;
+        setFiles(inp, [file]);
+        otherBag.appendChild(inp);
+      });
+      renderPreviews("other-previews", done.files, done.notes);
+      otherPicker.removeAttribute("name");
+      setMsg("other-msg", (msg ? msg + " " : "") + "已选 " + done.files.length + " 张。", cls || "ok");
+      updateSummary();
+    }
+
+    async function compressAllForSubmit() {
+      var remaining = SAFE_TOTAL;
+      async function redo(input, previewId, msgId) {
+        if (!input.files || !input.files[0]) return;
+        var done = await processList([input.files[0]], Math.max(350 * 1024, remaining));
+        setFiles(input, done.files);
+        remaining = Math.max(350 * 1024, SAFE_TOTAL - totalBytes());
+        renderPreviews(previewId, done.files, done.notes);
+        if (msgId) setMsg(msgId, done.notes[0] || "", "ok");
+      }
+      await redo(avatarInput, "avatar-previews", "avatar-msg");
+      await redo(logoInput, "logo-previews", "logo-msg");
+      var hidden = otherBag.querySelectorAll("input[type=file]");
+      for (var i = 0; i < hidden.length; i++) {
+        if (!hidden[i].files || !hidden[i].files[0]) continue;
+        var one = await processList([hidden[i].files[0]], Math.max(350 * 1024, Math.floor(remaining / Math.max(hidden.length - i, 1))));
+        setFiles(hidden[i], one.files);
+        remaining = Math.max(350 * 1024, SAFE_TOTAL - totalBytes());
+      }
+      var others = [];
+      var notes = [];
+      Array.prototype.forEach.call(otherBag.querySelectorAll("input[type=file]"), function (inp) {
+        if (inp.files && inp.files[0]) {
+          others.push(inp.files[0]);
+          notes.push(inp.files[0].name + " · " + fmt(inp.files[0].size));
+        }
+      });
+      if (others.length) renderPreviews("other-previews", others, notes);
+    }
+
+    avatarInput.addEventListener("change", function () {
+      handleSingle(avatarInput, "avatar-previews", "avatar-msg", "请从相册选择一张近期照片，用于名片头像。");
+    });
+    logoInput.addEventListener("change", function () {
+      handleSingle(logoInput, "logo-previews", "logo-msg", "如需展示公司标识，请上传 Logo 图片。");
+    });
+    otherPicker.addEventListener("change", handleOther);
+
+    form.addEventListener("submit", function (e) {
+      if (readyToSend) return;
+      e.preventDefault();
+      var picked = collectInputs();
+      var bad = picked.filter(function (item) { return !isImageFile(item.file); });
+      if (bad.length) {
+        updateSummary("含有非图片文件，请去掉后再提交。", true);
+        return;
+      }
+      submitBtn.disabled = true;
+      var oldLabel = submitBtn.textContent;
+      submitBtn.textContent = "正在处理图片…";
+      compressAllForSubmit().then(function () {
+        if (totalBytes() > MAX_TOTAL) {
+          updateSummary("", true);
+          submitBtn.disabled = false;
+          submitBtn.textContent = oldLabel;
+          return;
+        }
+        otherPicker.removeAttribute("name");
+        updateSummary("即将提交。");
+        readyToSend = true;
+        submitBtn.disabled = false;
+        submitBtn.textContent = oldLabel;
+        if (typeof form.requestSubmit === "function") form.requestSubmit();
+        else form.submit();
+      }).catch(function (err) {
+        updateSummary("处理图片时出错：" + (err && err.message ? err.message : "请换一张 JPG 或 PNG 再试。"), true);
+        submitBtn.disabled = false;
+        submitBtn.textContent = oldLabel;
+      });
+    });
+
+    updateSummary();
+    window.addEventListener("pagehide", revokeUrls);
+  })();
+  </script>
 </body>
 </html>
